@@ -6,11 +6,8 @@ services:
     container_name: binance_trader
     working_dir: /app
     volumes:
-      - ./user.cfg:/app/user.cfg
-      - ./supported_coin_list:/app/supported_coin_list
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./config:/app/config
+      - data:/app/data
+      - logs:/app/logs
     command: python -m binance_trade_bot
     environment:
       - PYTHONUNBUFFERED=1
@@ -20,9 +17,8 @@ services:
     container_name: binance_trader_api
     working_dir: /app
     volumes:
-      - ./user.cfg:/app/user.cfg
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - data:/app/data
+      - logs:/app/logs
     ports:
       - 5123:5123
     command: gunicorn binance_trade_bot.api_server:app -k eventlet -w 1 --threads 1 -b 0.0.0.0:5123
@@ -35,9 +31,13 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Berlin
+      - TZ=Europe/London
     volumes:
-      - ./data/config:/config
-      - ./data:/data
+      - data:/data
     ports:
       - 3000:3000
+
+volumes: 
+  data:
+  logs:
+  
