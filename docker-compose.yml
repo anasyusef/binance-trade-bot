@@ -2,7 +2,7 @@ version: "3"
 
 services:
   crypto-trading:
-    image: edeng23/binance-trade-bot
+    image: 302142484185.dkr.ecr.eu-west-2.amazonaws.com/binance-trade-bot:latest
     container_name: binance_trader
     working_dir: /app
     volumes:
@@ -13,17 +13,23 @@ services:
       - PYTHONUNBUFFERED=1
 
   api:
-    image: edeng23/binance-trade-bot
+    image: 302142484185.dkr.ecr.eu-west-2.amazonaws.com/binance-trade-bot:latest
     container_name: binance_trader_api
     working_dir: /app
     volumes:
       - data:/app/data
       - logs:/app/logs
     ports:
-      - 5123:5123
+      - target: 5123
+        x-aws-protocol: http
     command: gunicorn binance_trade_bot.api_server:app -k eventlet -w 1 --threads 1 -b 0.0.0.0:5123
     depends_on:
       - crypto-trading
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 500M
 
   sqlitebrowser:
     image: ghcr.io/linuxserver/sqlitebrowser
@@ -34,8 +40,8 @@ services:
       - TZ=Europe/London
     volumes:
       - data:/data
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
 
 volumes: 
   data:
