@@ -4,7 +4,7 @@ import os
 
 from .models import Coin
 
-CFG_FL_NAME = "user.cfg"
+CFG_FL_PATH = "config/user.cfg"
 USER_CFG_SECTION = "binance_user_config"
 
 
@@ -23,11 +23,11 @@ class Config:  # pylint: disable=too-few-public-methods,too-many-instance-attrib
             "buy_timeout": "0",
         }
 
-        if not os.path.exists(CFG_FL_NAME):
+        if not os.path.exists(CFG_FL_PATH):
             print("No configuration file (user.cfg) found! See README. Assuming default config...")
             config[USER_CFG_SECTION] = {}
         else:
-            config.read(CFG_FL_NAME)
+            config.read(CFG_FL_PATH)
 
         self.BRIDGE_SYMBOL = os.environ.get("BRIDGE_SYMBOL") or config.get(USER_CFG_SECTION, "bridge")
         self.BRIDGE = Coin(self.BRIDGE_SYMBOL, False)
@@ -55,8 +55,8 @@ class Config:  # pylint: disable=too-few-public-methods,too-many-instance-attrib
             coin.strip() for coin in os.environ.get("SUPPORTED_COIN_LIST", "").split() if coin.strip()
         ]
         # Get supported coin list from supported_coin_list file
-        if not supported_coin_list and os.path.exists("supported_coin_list"):
-            with open("supported_coin_list") as rfh:
+        if not supported_coin_list and os.path.exists("config/supported_coin_list"):
+            with open("config/supported_coin_list") as rfh:
                 for line in rfh:
                     line = line.strip()
                     if not line or line.startswith("#") or line in supported_coin_list:
